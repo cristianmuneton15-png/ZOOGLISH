@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zooglish - La jungla del Ingles</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif; }
+  body { background: linear-gradient(135deg, #ffe29a, #ffb3c6, #a5d8ff); min-height: 100vh; color: #333; }
+  header { text-align: center; padding: 25px 15px 10px; }
+  h1 { color: #6a1b9a; font-size: clamp(34px, 7vw, 56px); text-shadow: 3px 3px #fff; }
+  .subtitle { font-size: 18px; margin-top: 6px; }
+  .monkey { font-size: 90px; display: block; margin: 10px auto; animation: bounce 2s infinite; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+  .speech { background: #fff; border: 4px dashed #ff9800; border-radius: 20px; max-width: 520px; margin: 10px auto 20px; padding: 15px; font-size: 18px; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+  .card { background: #fff; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 8px 18px rgba(0,0,0,.15); transition: transform .2s; }
+  .card:hover { transform: translateY(-6px); }
+  .emoji { font-size: 48px; }
+  .card h2 { margin: 10px 0; color: #1565c0; }
+  .card p { font-size: 15px; margin-bottom: 12px; }
+  button { background: #7b1fa2; color: white; border: none; padding: 10px 18px; border-radius: 999px; font-size: 16px; cursor: pointer; }
+  button:hover { background: #9c27b0; }
+  .game { background: #fff; border-radius: 20px; padding: 25px; margin-top: 30px; text-align: center; box-shadow: 0 8px 18px rgba(0,0,0,.15); }
+  .question { font-size: 22px; margin-bottom: 15px; }
+  .options { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+  .option { background: #e8f5e9; border: 3px solid #81c784; padding: 12px 20px; border-radius: 14px; cursor: pointer; font-size: 18px; }
+  .option:hover { background: #c8e6c9; }
+  .feedback { margin-top: 15px; font-weight: bold; min-height: 24px; }
+  footer { text-align: center; padding: 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+<header>
+  <span class="monkey">🐒</span>
+  <h1>Zooglish</h1>
+  <p class="subtitle">¡Aprende inglés jugando con Captain Lotto, tu mascota!</p>
+  <div class="speech">¡Welcome, My pirates I am <b>Captain Lotto</b> 🐵. Y ¡Vamos a aprender inglés juntos!</div>
+</header>
+
+<div class="container">
+  <div class="cards">
+    <div class="card">
+      <div class="emoji">🔤</div>
+      <h2>Alphabeth</h2>
+      <p>Aprende las letras y sus sonidos.</p>
+      <button onclick="speak('A is for Apple. B is for Ball. C is for Cat.')">Start</button>
+    </div>
+    <div class="card">
+      <div class="emoji">🎨</div>
+      <h2>Colores</h2>
+      <p>Red, blue, yellow y muchos más.</p>
+      <button onclick="speak('Red is rojo. Blue is azul. Yellow is amarillo. Green is verde.')">Start</button>
+    </div>
+    <div class="card">
+      <div class="emoji">🔢</div>
+      <h2>Números</h2>
+      <p>Cuenta del 1 al 10 en inglés.</p>
+      <button onclick="speak('One, two, three, four, five, six, seven, eight, nine, ten!')">Start</button>
+    </div>
+    <div class="card">
+      <div class="emoji">🐾</div>
+      <h2>Animales</h2>
+      <p>Descubre los nombres de los animales.</p>
+      <button onclick="speak('Dog is perro. Cat is gato. Bird is pajaro. Fish is pez.')">Start</button>
+    </div>
+  </div>
+
+  <div class="game">
+    <h2>🎯 Lotto's Game</h2>
+    <p class="question" id="question"></p>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <button onclick="newQuestion()">Nueva pregunta</button>
+  </div>
+</div>
+
+<footer>Zooglish 🐒 — Aprende inglés con diversión</footer>
+
+<script>
+const questions = [
+  { q: '¿Cómo se dice “Perro” en inglés?', options: ['Dog', 'Cat', 'Bird'], answer: 'Dog' },
+  { q: '¿Cómo se dice “Manzana” en inglés?', options: ['Apple', 'Banana', 'Grape'], answer: 'Apple' },
+  { q: '¿Cómo se dice “Azul” en inglés?', options: ['Red', 'Blue', 'Green'], answer: 'Blue' },
+  { q: '¿Cómo se dice “Gato” en inglés?', options: ['Fish', 'Cat', 'Cow'], answer: 'Cat' },
+  { q: '¿Cómo se dice “Cinco” en inglés?', options: ['Four', 'Five', 'Six'], answer: 'Five' }
+];
+
+function speak(text) {
+  if ('speechSynthesis' in window) {
+    const voice = new SpeechSynthesisUtterance(text);
+    voice.lang = 'en-US';
+    speechSynthesis.speak(voice);
+  } else {
+    alert(text);
+  }
+}
+
+function newQuestion() {
+  const item = questions[Math.floor(Math.random() * questions.length)];
+  document.getElementById('question').textContent = item.q;
+  document.getElementById('feedback').textContent = '';
+  const box = document.getElementById('options');
+  box.innerHTML = '';
+  item.options.forEach(option => {
+    const button = document.createElement('div');
+    button.className = 'option';
+    button.textContent = option;
+    button.onclick = () => {
+      if (option === item.answer) {
+        document.getElementById('feedback').textContent = '🐵 ¡Muy bien! ' + item.answer + ' es correcto.';
+        speak('Great job!');
+      } else {
+        document.getElementById('feedback').textContent = '🐵 ¡Casi! Intenta otra vez.';
+        speak('Try again!');
+      }
+    };
+    box.appendChild(button);
+  });
+}
+newQuestion();
+</script>
+</body>
+</html>
